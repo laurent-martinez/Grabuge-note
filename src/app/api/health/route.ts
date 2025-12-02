@@ -2,39 +2,40 @@ import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {
-    // Vérifier si les variables d'environnement KV sont définies
-    const kvConfigured = !!(
-      process.env.KV_REST_API_URL && 
-      process.env.KV_REST_API_TOKEN
-    );
+    // Vérifier si REDIS_URL est définie
+    const redisConfigured = !!process.env.REDIS_URL;
 
-    if (!kvConfigured) {
+    if (!redisConfigured) {
       return NextResponse.json({
         status: 'warning',
-        message: 'Vercel KV non configuré. L\'application utilise les données par défaut.',
+        message: 'Redis non configuré. L\'application utilise les données par défaut.',
         configured: false,
         environment: process.env.NODE_ENV,
-        note: 'Ceci est normal en développement local. En production sur Vercel, créez une base KV.',
+        note: 'Ceci est normal en développement local. En production sur Vercel, Redis doit être configuré.',
       });
     }
 
-    // Tester la connexion KV
-    const { kv } = await import('@vercel/kv');
-    await kv.ping();
+    // Tester la connexion Redis
+    const { createClient } = await import('redis');
+    const client = createClient({ url: process.env.REDIS_URL });
+    
+    await client.connect();
+    await client.ping();
+    await client.quit();
 
     return NextResponse.json({
       status: 'success',
-      message: 'Vercel KV est configuré et fonctionne correctement ! ✅',
+      message: 'Redis est configuré et fonctionne correctement ! ✅',
       configured: true,
       environment: process.env.NODE_ENV,
     });
   } catch (error: any) {
     return NextResponse.json({
       status: 'error',
-      message: 'Erreur lors de la connexion à Vercel KV',
+      message: 'Erreur lors de la connexion à Redis',
       error: error.message,
       configured: false,
-      note: 'Vérifiez que Vercel KV est bien créé et connecté à votre projet.',
+      note: 'Vérifiez que Redis est bien créé et que REDIS_URL est définie.',
     }, { status: 500 });
   }
 }
