@@ -129,6 +129,6 @@ Pour développer localement avec KV :
 
 Une fois déployé sur Vercel, tous vos appareils (téléphones, tablettes, ordinateurs) peuvent accéder à l'application via l'URL Vercel :
 
-`https://restaurant-notes-xxx.vercel.app`
+`https://grabuge-note.vercel.app`
 
 Tous les appareils verront les mêmes données en temps réel ! 🎉

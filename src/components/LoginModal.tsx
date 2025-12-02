@@ -67,10 +67,6 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
             </button>
           </div>
         </form>
-
-        <p className="mt-4 text-xs sm:text-sm text-gray-400 text-center">
-          Utilisateur : admin / Mot de passe : admin123
-        </p>
       </div>
     </div>
   );
