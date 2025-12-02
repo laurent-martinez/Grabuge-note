@@ -177,7 +177,7 @@ export default function MenuManager({ onClose }: { onClose: () => void }) {
                       <div className="flex gap-2 ml-2">
                         <button
                           onClick={() => handleEdit(item)}
-                          className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs sm:text-sm"
+                          className="bg-white hover:bg-accent-light text-white px-3 py-1 rounded text-xs sm:text-sm"
                         >
                           ✏️
                         </button>
@@ -187,7 +187,7 @@ export default function MenuManager({ onClose }: { onClose: () => void }) {
                               deleteMenuItem(item.id);
                             }
                           }}
-                          className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-xs sm:text-sm"
+                          className="bg-accent-coral hover:bg-accent-orange text-white px-3 py-1 rounded text-xs sm:text-sm"
                         >
                           🗑️
                         </button>

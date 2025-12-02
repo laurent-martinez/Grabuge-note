@@ -10,12 +10,14 @@ const config: Config = {
     extend: {
       colors: {
         primary: {
-          DEFAULT: '#1e1b4b', // indigo-950
-          dark: '#0f0d29',
+          DEFAULT: '#0d0715', // Presque noir avec nuance violette
+          dark: '#2d2654', // Violet très sombre (pour contraste)
         },
         accent: {
-          DEFAULT: '#fbbf24', // yellow-400
-          light: '#fde047', // yellow-300
+          DEFAULT: '#5fff8d', // Vert néon (ancien light)
+          light: '#a7ffbd', // Vert néon très clair et doux
+          coral: '#ff6b35', // Rouge corail
+          orange: '#ff5722', // Orange
         }
       },
       fontFamily: {

@@ -55,8 +55,8 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-accent">
-            RESTAURANT NOTES
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white">
+            Les notes du Grabuge
           </h1>
           <div className="flex flex-wrap gap-2 w-full sm:w-auto">
             {isAuthenticated ? (
@@ -65,11 +65,11 @@ export default function Home() {
                   onClick={() => setShowMenuManager(true)}
                   className="flex-1 sm:flex-none bg-accent hover:bg-accent-light text-primary px-4 py-2 rounded font-semibold transition text-sm sm:text-base"
                 >
-                  ⚙️ GÉRER LE MENU
+                   GÉRER LE MENU
                 </button>
                 <button
                   onClick={logout}
-                  className="flex-1 sm:flex-none bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded font-semibold transition text-sm sm:text-base"
+                  className="flex-1 sm:flex-none bg-accent-coral hover:bg-accent-orange text-white px-4 py-2 rounded font-semibold transition text-sm sm:text-base"
                 >
                   DÉCONNEXION
                 </button>
@@ -163,7 +163,7 @@ export default function Home() {
           {notes.filter(n => n.status === 'cloture').length > 0 && (
             <button
               onClick={handleDeleteClosedNotes}
-              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded font-semibold transition whitespace-nowrap text-sm sm:text-base"
+              className="bg-accent-coral hover:bg-accent-orange text-white px-4 py-2 rounded font-semibold transition whitespace-nowrap text-sm sm:text-base"
             >
               🗑️ SUPPRIMER LES NOTES CLÔTURÉES
             </button>

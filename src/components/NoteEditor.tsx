@@ -153,7 +153,7 @@ export default function NoteEditor({ note, onClose }: { note: Note; onClose: () 
                             <button
                               onClick={() => removeItem(menuItem.id)}
                               disabled={note.status === 'cloture'}
-                              className="bg-red-600 hover:bg-red-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white w-8 h-8 rounded font-bold text-lg"
+                              className="bg-accent-coral hover:bg-accent-orange disabled:bg-gray-600 disabled:cursor-not-allowed text-white w-8 h-8 rounded font-bold text-lg"
                             >
                               −
                             </button>
@@ -282,7 +282,7 @@ export default function NoteEditor({ note, onClose }: { note: Note; onClose: () 
                       closeNote(note.id);
                     }
                   }}
-                  className="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded font-semibold transition text-sm sm:text-base"
+                  className="w-full bg-accent-coral hover:bg-accent-orange text-white py-3 rounded font-semibold transition text-sm sm:text-base"
                 >
                   CLÔTURER LA NOTE
                 </button>

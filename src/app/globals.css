@@ -30,12 +30,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #fbbf24;
+  background: #5fff8d;
   border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #fde047;
+  background: #a7ffbd;
 }
 
 /* Input number arrows removal for cleaner look */

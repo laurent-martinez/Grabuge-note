@@ -10,7 +10,7 @@ const orbitron = Orbitron({
 })
 
 export const metadata: Metadata = {
-  title: 'Restaurant Notes',
+  title: 'Grabuge gestion',
   description: 'Système de gestion de notes pour restaurant',
 }
 
