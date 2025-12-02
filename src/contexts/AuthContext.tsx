@@ -22,7 +22,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = (username: string, password: string) => {
     // Simple authentification (à remplacer par un vrai système en production)
-    if (username === 'admin' && password === 'admin123') {
+    if (username === 'grabuge' && password === '.grabuge66.') {
       setIsAuthenticated(true);
       localStorage.setItem('auth', 'true');
       return true;
