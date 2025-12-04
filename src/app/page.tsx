@@ -6,14 +6,16 @@ import { useAuth } from '@/contexts/AuthContext';
 import NoteEditor from '@/components/NoteEditor';
 import MenuManager from '@/components/MenuManager';
 import LoginModal from '@/components/LoginModal';
+import QuickPayment from '@/components/QuickPayment';
 import { Note } from '@/types';
 
 export default function Home() {
-  const { notes, addNote, isLoading, deleteClosedNotes } = useApp();
+  const { notes, addNote, isLoading, deleteClosedNotes, menuItems } = useApp();
   const { isAuthenticated, logout } = useAuth();
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const [showMenuManager, setShowMenuManager] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
+  const [showQuickPayment, setShowQuickPayment] = useState(false);
   const [newNoteTitle, setNewNoteTitle] = useState('');
   const [showNewNoteForm, setShowNewNoteForm] = useState(false);
   const [filter, setFilter] = useState<'all' | 'ouvert' | 'cloture'>('all');
@@ -55,8 +57,8 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold">
-        Les notes du Grabuge
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-accent">
+            RESTAURANT NOTES
           </h1>
           <div className="flex flex-wrap gap-2 w-full sm:w-auto">
             {isAuthenticated ? (
@@ -117,12 +119,20 @@ export default function Home() {
             </div>
           </div>
         ) : (
-          <button
-            onClick={() => setShowNewNoteForm(true)}
-            className="w-full bg-accent hover:opacity-90 text-white py-4 rounded-lg font-bold text-lg sm:text-xl mb-6 transition shadow-md"
-          >
-            + NOUVELLE NOTE
-          </button>
+          <div className="space-y-3 mb-6">
+            <button
+              onClick={() => setShowNewNoteForm(true)}
+              className="w-full bg-accent hover:opacity-90 text-white py-4 rounded-lg font-bold text-lg sm:text-xl transition shadow-md"
+            >
+              + NOUVELLE NOTE
+            </button>
+            <button
+              onClick={() => setShowQuickPayment(true)}
+              className="w-full bg-green-500 hover:opacity-90 text-white py-4 rounded-lg font-bold text-lg sm:text-xl transition shadow-md"
+            >
+              ⚡ PAIEMENT RAPIDE
+            </button>
+          </div>
         )}
 
         {/* Filter Buttons */}
@@ -242,6 +252,13 @@ export default function Home() {
 
       {showLogin && (
         <LoginModal onClose={() => setShowLogin(false)} />
+      )}
+
+      {showQuickPayment && (
+        <QuickPayment 
+          menuItems={menuItems}
+          onClose={() => setShowQuickPayment(false)} 
+        />
       )}
     </div>
   );
