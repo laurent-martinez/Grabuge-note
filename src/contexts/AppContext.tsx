@@ -10,7 +10,7 @@ interface AppContextType {
   updateNote: (noteId: string, items: NoteItem[], adjustments: Adjustment[]) => void;
   closeNote: (noteId: string) => void;
   reopenNote: (noteId: string) => void;
-  deleteClosedNotes: () => void;
+deleteClosedNotes: () => Promise<void>;
   addMenuItem: (item: Omit<MenuItem, 'id'>) => void;
   updateMenuItem: (id: string, item: Partial<MenuItem>) => void;
   deleteMenuItem: (id: string) => void;
@@ -178,11 +178,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     saveNotes(updatedNotes);
   };
 
-  const deleteClosedNotes = () => {
-    const updatedNotes = notes.filter(note => note.status === 'ouvert');
-    setNotes(updatedNotes);
-    saveNotes(updatedNotes);
-  };
+const deleteClosedNotes = async () => {
+  const updatedNotes = notes.filter(note => note.status === 'ouvert');
+  setNotes(updatedNotes);
+  await saveNotes(updatedNotes);
+};
 
   const addMenuItem = (item: Omit<MenuItem, 'id'>) => {
     const newItem: MenuItem = {

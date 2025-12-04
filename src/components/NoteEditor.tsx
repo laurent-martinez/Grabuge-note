@@ -10,6 +10,7 @@ export default function NoteEditor({ note, onClose }: { note: Note; onClose: () 
   const [adjustments, setAdjustments] = useState<Adjustment[]>(note.adjustments);
   const [adjustmentAmount, setAdjustmentAmount] = useState('');
   const [numberOfPeople, setNumberOfPeople] = useState<string>('');
+  const [tempRemovals, setTempRemovals] = useState<{menuItemId: string, name: string, price: number}[]>([]);
 
   useEffect(() => {
     updateNote(note.id, items, adjustments);
@@ -54,7 +55,15 @@ export default function NoteEditor({ note, onClose }: { note: Note; onClose: () 
 
   const removeItem = (menuItemId: string) => {
     const existingItem = items.find(i => i.menuItemId === menuItemId);
-    if (!existingItem) return;
+    const menuItem = menuItems.find(m => m.id === menuItemId);
+    if (!existingItem || !menuItem) return;
+
+    // Ajouter aux retraits temporaires
+    setTempRemovals([...tempRemovals, {
+      menuItemId: menuItem.id,
+      name: menuItem.name,
+      price: menuItem.price
+    }]);
 
     if (existingItem.quantity > 1) {
       setItems(items.map(i =>
@@ -65,6 +74,10 @@ export default function NoteEditor({ note, onClose }: { note: Note; onClose: () 
     } else {
       setItems(items.filter(i => i.menuItemId !== menuItemId));
     }
+  };
+
+  const clearTempRemovals = () => {
+    setTempRemovals([]);
   };
 
   const addAdjustment = () => {
@@ -85,9 +98,17 @@ export default function NoteEditor({ note, onClose }: { note: Note; onClose: () 
     setAdjustments(adjustments.filter(a => a.id !== id));
   };
 
+  const handleCloseNote = () => {
+    if (confirm('Clôturer cette note ?')) {
+      closeNote(note.id);
+      onClose(); // Fermer la modale automatiquement
+    }
+  };
+
   const itemsTotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   const adjustmentsTotal = adjustments.reduce((sum, adj) => sum + adj.amount, 0);
   const total = itemsTotal + adjustmentsTotal;
+  const tempRemovalsTotal = tempRemovals.reduce((sum, item) => sum + item.price, 0);
 
   const groupedMenuItems = menuItems.reduce((acc, item) => {
     if (!acc[item.category]) {
@@ -220,6 +241,35 @@ export default function NoteEditor({ note, onClose }: { note: Note; onClose: () 
               )}
             </div>
 
+            {/* Retraits temporaires */}
+            {tempRemovals.length > 0 && (
+              <div className="bg-orange-50 border-2 border-orange-400 rounded-lg p-3 sm:p-4">
+                <div className="flex justify-between items-center mb-3">
+                  <h4 className="text-orange-600 font-semibold text-sm sm:text-base">RETRAITS EN COURS</h4>
+                  <button
+                    onClick={clearTempRemovals}
+                    className="text-red-500 hover:text-red-700 text-xl font-bold"
+                  >
+                    ✕
+                  </button>
+                </div>
+                <div className="space-y-2">
+                  {tempRemovals.map((item, index) => (
+                    <div key={index} className="flex justify-between text-gray-900 text-sm">
+                      <span>{item.name}</span>
+                      <span className="text-orange-600 font-semibold">
+                        -{item.price.toFixed(2)}€
+                      </span>
+                    </div>
+                  ))}
+                  <div className="border-t border-orange-400 pt-2 mt-2 flex justify-between font-bold">
+                    <span className="text-gray-900">À payer</span>
+                    <span className="text-orange-600 text-lg">{tempRemovalsTotal.toFixed(2)}€</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Adjustments */}
             <div className="bg-white shadow-md rounded-lg p-3 sm:p-4">
               <h4 className="text-accent font-semibold mb-3 text-sm sm:text-base">AJUSTEMENTS</h4>
@@ -314,11 +364,7 @@ export default function NoteEditor({ note, onClose }: { note: Note; onClose: () 
             <div className="space-y-2">
               {note.status === 'ouvert' ? (
                 <button
-                  onClick={() => {
-                    if (confirm('Clôturer cette note ?')) {
-                      closeNote(note.id);
-                    }
-                  }}
+                  onClick={handleCloseNote}
                   className="w-full bg-red-500 hover:opacity-90 text-white py-3 rounded font-semibold transition text-sm sm:text-base"
                 >
                   CLÔTURER LA NOTE

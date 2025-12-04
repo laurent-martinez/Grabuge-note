@@ -47,6 +47,11 @@ export default function QuickPayment({ menuItems, onClose }: QuickPaymentProps) 
     }
   };
 
+  const handleComplete = () => {
+    // Fermer automatiquement la modale
+    onClose();
+  };
+
   const total = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   const given = parseFloat(amountGiven) || 0;
   const change = given - total;
@@ -187,7 +192,7 @@ export default function QuickPayment({ menuItems, onClose }: QuickPaymentProps) 
 
             {/* Bouton Terminer */}
             <button
-              onClick={onClose}
+              onClick={handleComplete}
               disabled={!amountGiven || given < total}
               className="w-full bg-accent hover:opacity-90 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed text-white py-4 rounded-lg font-bold text-lg transition"
             >
