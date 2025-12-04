@@ -57,8 +57,8 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-accent">
-            RESTAURANT NOTES
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold">
+          Les notes du Grabuge
           </h1>
           <div className="flex flex-wrap gap-2 w-full sm:w-auto">
             {isAuthenticated ? (
