@@ -15,27 +15,27 @@ body {
 }
 
 body {
-  background-color: #1e1b4b;
-  color: white;
+  background-color: #f5f5f7;
+  color: #1d1d1f;
 }
 
-/* Scrollbar styling */
+/* Scrollbar styling - Apple style */
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0f0d29;
+  background: #e5e5e7;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #5fff8d;
+  background: #d1d1d6;
   border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #a7ffbd;
+  background: #b4b4b8;
 }
 
 /* Input number arrows removal for cleaner look */

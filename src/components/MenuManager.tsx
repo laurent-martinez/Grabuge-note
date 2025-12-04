@@ -75,12 +75,12 @@ export default function MenuManager({ onClose }: { onClose: () => void }) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
-      <div className="bg-primary rounded-lg p-4 sm:p-6 lg:p-8 w-full max-w-4xl border-2 border-accent my-8">
+      <div className="bg-white shadow-xl rounded-lg p-4 sm:p-6 lg:p-8 w-full max-w-4xl border-2 border-accent my-8">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl sm:text-3xl font-bold text-accent">GESTION DU MENU</h2>
           <button
             onClick={onClose}
-            className="text-accent hover:text-accent-light text-2xl sm:text-3xl"
+            className="text-accent hover:opacity-80 text-2xl sm:text-3xl"
           >
             ✕
           </button>
@@ -88,45 +88,45 @@ export default function MenuManager({ onClose }: { onClose: () => void }) {
 
         <button
           onClick={handleAdd}
-          className="w-full bg-accent hover:bg-accent-light text-primary py-3 rounded font-semibold transition mb-6 text-sm sm:text-base"
+          className="w-full bg-accent hover:opacity-90 text-white py-3 rounded font-semibold transition mb-6 text-sm sm:text-base shadow-md"
         >
           + AJOUTER UN ARTICLE
         </button>
 
         {(isAdding || editingId) && (
-          <div className="bg-primary-dark p-4 rounded-lg mb-6 border-2 border-accent">
+          <div className="bg-gray-50 p-4 rounded-lg mb-6 border-2 border-accent">
             <h3 className="text-accent font-bold mb-4 text-lg">
               {isAdding ? 'NOUVEL ARTICLE' : 'MODIFIER L\'ARTICLE'}
             </h3>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
               <div>
-                <label className="block text-white mb-2 text-sm">Nom</label>
+                <label className="block text-gray-900 mb-2 text-sm font-medium">Nom</label>
                 <input
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full bg-primary text-white border-2 border-accent rounded px-3 py-2 focus:outline-none focus:border-accent-light text-sm"
+                  className="w-full bg-white text-gray-900 border-2 border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-accent text-sm"
                 />
               </div>
               
               <div>
-                <label className="block text-white mb-2 text-sm">Prix (€)</label>
+                <label className="block text-gray-900 mb-2 text-sm font-medium">Prix (€)</label>
                 <input
                   type="number"
                   step="0.1"
                   value={formData.price}
                   onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                  className="w-full bg-primary text-white border-2 border-accent rounded px-3 py-2 focus:outline-none focus:border-accent-light text-sm"
+                  className="w-full bg-white text-gray-900 border-2 border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-accent text-sm"
                 />
               </div>
               
               <div className="sm:col-span-2">
-                <label className="block text-white mb-2 text-sm">Catégorie</label>
+                <label className="block text-gray-900 mb-2 text-sm font-medium">Catégorie</label>
                 <select
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value as MenuItem['category'] })}
-                  className="w-full bg-primary text-white border-2 border-accent rounded px-3 py-2 focus:outline-none focus:border-accent-light text-sm"
+                  className="w-full bg-white text-gray-900 border-2 border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-accent text-sm"
                 >
                   {categories.map(cat => (
                     <option key={cat.value} value={cat.value}>{cat.label}</option>
@@ -138,13 +138,13 @@ export default function MenuManager({ onClose }: { onClose: () => void }) {
             <div className="flex gap-3">
               <button
                 onClick={handleCancel}
-                className="flex-1 bg-gray-600 hover:bg-gray-700 text-white py-2 rounded font-semibold transition text-sm"
+                className="flex-1 bg-gray-400 hover:opacity-90 text-white py-2 rounded font-semibold transition text-sm"
               >
                 ANNULER
               </button>
               <button
                 onClick={handleSave}
-                className="flex-1 bg-accent hover:bg-accent-light text-primary py-2 rounded font-semibold transition text-sm"
+                className="flex-1 bg-accent hover:opacity-90 text-white py-2 rounded font-semibold transition text-sm"
               >
                 ENREGISTRER
               </button>
@@ -158,7 +158,7 @@ export default function MenuManager({ onClose }: { onClose: () => void }) {
             if (items.length === 0) return null;
 
             return (
-              <div key={value} className="bg-primary-dark rounded-lg p-4">
+              <div key={value} className="bg-gray-50 rounded-lg p-4 shadow-sm">
                 <h3 className="text-accent font-bold mb-3 text-base sm:text-lg uppercase">
                   {label}
                 </h3>
@@ -166,18 +166,18 @@ export default function MenuManager({ onClose }: { onClose: () => void }) {
                   {items.map(item => (
                     <div
                       key={item.id}
-                      className="flex items-center justify-between bg-primary rounded p-3 border border-accent"
+                      className="flex items-center justify-between bg-white rounded p-3 border-2 border-gray-200 hover:border-accent transition"
                     >
                       <div className="flex-1 min-w-0">
-                        <p className="text-white font-semibold truncate text-sm sm:text-base">
+                        <p className="text-gray-900 font-semibold truncate text-sm sm:text-base">
                           {item.name}
                         </p>
-                        <p className="text-accent text-sm sm:text-base">{item.price.toFixed(2)}€</p>
+                        <p className="text-accent text-sm sm:text-base font-medium">{item.price.toFixed(2)}€</p>
                       </div>
                       <div className="flex gap-2 ml-2">
                         <button
                           onClick={() => handleEdit(item)}
-                          className="bg-white hover:bg-accent-light text-white px-3 py-1 rounded text-xs sm:text-sm"
+                          className="bg-accent hover:opacity-90 text-white px-3 py-1 rounded text-xs sm:text-sm"
                         >
                           ✏️
                         </button>
@@ -187,7 +187,7 @@ export default function MenuManager({ onClose }: { onClose: () => void }) {
                               deleteMenuItem(item.id);
                             }
                           }}
-                          className="bg-accent-coral hover:bg-accent-orange text-white px-3 py-1 rounded text-xs sm:text-sm"
+                          className="bg-red-500 hover:opacity-90 text-white px-3 py-1 rounded text-xs sm:text-sm"
                         >
                           🗑️
                         </button>

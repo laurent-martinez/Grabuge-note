@@ -9,6 +9,7 @@ export default function NoteEditor({ note, onClose }: { note: Note; onClose: () 
   const [items, setItems] = useState<NoteItem[]>(note.items);
   const [adjustments, setAdjustments] = useState<Adjustment[]>(note.adjustments);
   const [adjustmentAmount, setAdjustmentAmount] = useState('');
+  const [numberOfPeople, setNumberOfPeople] = useState<string>('');
 
   useEffect(() => {
     updateNote(note.id, items, adjustments);
@@ -105,11 +106,11 @@ export default function NoteEditor({ note, onClose }: { note: Note; onClose: () 
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4 overflow-y-auto">
-      <div className="bg-primary rounded-lg p-4 sm:p-6 w-full max-w-6xl border-2 border-accent my-4 max-h-[95vh] overflow-y-auto">
+      <div className="bg-gray-50 rounded-lg p-4 sm:p-6 w-full max-w-6xl border-2 border-accent my-4 max-h-[95vh] overflow-y-auto">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
           <div className="flex-1 min-w-0">
             <h2 className="text-2xl sm:text-3xl font-bold text-accent truncate">{note.title}</h2>
-            <p className="text-gray-400 text-xs sm:text-sm">
+            <p className="text-gray-600 text-xs sm:text-sm">
               {note.status === 'ouvert' ? '🟢 Ouvert' : '🔴 Clôturé'}
             </p>
           </div>
@@ -131,7 +132,7 @@ export default function NoteEditor({ note, onClose }: { note: Note; onClose: () 
               if (categoryItems.length === 0) return null;
 
               return (
-                <div key={value} className="bg-primary-dark rounded-lg p-3 sm:p-4">
+                <div key={value} className="bg-white shadow-md rounded-lg p-3 sm:p-4">
                   <h4 className="text-accent font-semibold mb-3 text-sm sm:text-base">{label}</h4>
                   <div className="space-y-2">
                     {categoryItems.map(menuItem => {
@@ -141,10 +142,10 @@ export default function NoteEditor({ note, onClose }: { note: Note; onClose: () 
                       return (
                         <div
                           key={menuItem.id}
-                          className="flex items-center justify-between bg-primary rounded p-2 sm:p-3 border border-accent"
+                          className="flex items-center justify-between bg-gray-50 rounded p-2 sm:p-3 border border-accent"
                         >
                           <div className="flex-1 min-w-0 mr-2">
-                            <p className="text-white font-medium text-sm sm:text-base truncate">
+                            <p className="text-gray-900 font-medium text-sm sm:text-base truncate">
                               {menuItem.name}
                             </p>
                             <p className="text-accent text-xs sm:text-sm">{menuItem.price.toFixed(2)}€</p>
@@ -153,7 +154,7 @@ export default function NoteEditor({ note, onClose }: { note: Note; onClose: () 
                             <button
                               onClick={() => removeItem(menuItem.id)}
                               disabled={note.status === 'cloture'}
-                              className="bg-accent-coral hover:bg-accent-orange disabled:bg-gray-600 disabled:cursor-not-allowed text-white w-8 h-8 rounded font-bold text-lg"
+                              className="bg-red-500 hover:opacity-90 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed text-white w-8 h-8 rounded font-bold text-lg"
                             >
                               −
                             </button>
@@ -163,7 +164,7 @@ export default function NoteEditor({ note, onClose }: { note: Note; onClose: () 
                             <button
                               onClick={() => addItem(menuItem.id)}
                               disabled={note.status === 'cloture'}
-                              className="bg-green-600 hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white w-8 h-8 rounded font-bold text-lg"
+                              className="bg-accent-light hover:opacity-90 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed text-white w-8 h-8 rounded font-bold text-lg"
                             >
                               +
                             </button>
@@ -182,10 +183,10 @@ export default function NoteEditor({ note, onClose }: { note: Note; onClose: () 
             <h3 className="text-accent font-bold text-xl border-b-2 border-accent pb-2">RÉSUMÉ</h3>
 
             {/* Items in note */}
-            <div className="bg-primary-dark rounded-lg p-3 sm:p-4">
+            <div className="bg-white shadow-md rounded-lg p-3 sm:p-4">
               <h4 className="text-accent font-semibold mb-3 text-sm sm:text-base">ARTICLES</h4>
               {items.length === 0 ? (
-                <p className="text-gray-400 text-sm">Aucun article</p>
+                <p className="text-gray-600 text-sm">Aucun article</p>
               ) : (
                 <div className="space-y-2">
                   {items.map(item => {
@@ -193,16 +194,26 @@ export default function NoteEditor({ note, onClose }: { note: Note; onClose: () 
                     if (!menuItem) return null;
 
                     return (
-                      <div key={item.menuItemId} className="flex justify-between text-white text-sm sm:text-base">
-                        <span>{menuItem.name} x{item.quantity}</span>
-                        <span className="text-accent font-semibold">
-                          {(item.price * item.quantity).toFixed(2)}€
-                        </span>
+                      <div key={item.menuItemId} className="flex justify-between items-center text-gray-900 text-sm sm:text-base">
+                        <div className="flex-1 flex justify-between items-center">
+                          <span>{menuItem.name} x{item.quantity}</span>
+                          <span className="text-accent font-semibold">
+                            {(item.price * item.quantity).toFixed(2)}€
+                          </span>
+                        </div>
+                        {note.status === 'ouvert' && (
+                          <button
+                            onClick={() => removeItem(item.menuItemId)}
+                            className="ml-3 bg-red-500 hover:opacity-90 text-white w-7 h-7 rounded font-bold text-sm flex items-center justify-center"
+                          >
+                            −
+                          </button>
+                        )}
                       </div>
                     );
                   })}
                   <div className="border-t border-accent pt-2 mt-2 flex justify-between font-bold text-sm sm:text-base">
-                    <span className="text-white">Sous-total</span>
+                    <span className="text-gray-900">Sous-total</span>
                     <span className="text-accent">{itemsTotal.toFixed(2)}€</span>
                   </div>
                 </div>
@@ -210,7 +221,7 @@ export default function NoteEditor({ note, onClose }: { note: Note; onClose: () 
             </div>
 
             {/* Adjustments */}
-            <div className="bg-primary-dark rounded-lg p-3 sm:p-4">
+            <div className="bg-white shadow-md rounded-lg p-3 sm:p-4">
               <h4 className="text-accent font-semibold mb-3 text-sm sm:text-base">AJUSTEMENTS</h4>
               
               {note.status === 'ouvert' && (
@@ -222,11 +233,11 @@ export default function NoteEditor({ note, onClose }: { note: Note; onClose: () 
                     value={adjustmentAmount}
                     onChange={(e) => setAdjustmentAmount(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && addAdjustment()}
-                    className="w-full bg-primary text-white border-2 border-accent rounded px-3 py-2 focus:outline-none focus:border-accent-light text-sm"
+                    className="w-full bg-white text-gray-900 border-2 border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-accent text-sm"
                   />
                   <button
                     onClick={addAdjustment}
-                    className="w-full bg-accent hover:bg-accent-light text-primary py-2 rounded font-semibold transition text-sm"
+                    className="w-full bg-accent hover:opacity-90 text-white py-2 rounded font-semibold transition text-sm"
                   >
                     AJOUTER
                   </button>
@@ -234,24 +245,24 @@ export default function NoteEditor({ note, onClose }: { note: Note; onClose: () 
               )}
 
               {adjustments.length === 0 ? (
-                <p className="text-gray-400 text-sm">Aucun ajustement</p>
+                <p className="text-gray-600 text-sm">Aucun ajustement</p>
               ) : (
                 <div className="space-y-2">
                   {adjustments.map(adj => (
-                    <div key={adj.id} className="flex justify-between items-center bg-primary rounded p-2 text-sm">
+                    <div key={adj.id} className="flex justify-between items-center bg-gray-50 rounded p-2 text-sm">
                       <div className="flex-1">
-                        <p className="text-gray-400 text-xs">
+                        <p className="text-gray-600 text-xs">
                           {new Date(adj.timestamp).toLocaleString('fr-FR')}
                         </p>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className={`font-semibold ${adj.amount >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                        <span className={`font-semibold ${adj.amount >= 0 ? 'text-accent-light' : 'text-red-500'}`}>
                           {adj.amount >= 0 ? '+' : ''}{adj.amount.toFixed(2)}€
                         </span>
                         {note.status === 'ouvert' && (
                           <button
                             onClick={() => removeAdjustment(adj.id)}
-                            className="text-red-400 hover:text-red-500"
+                            className="text-red-500 hover:opacity-80"
                           >
                             ✕
                           </button>
@@ -263,11 +274,37 @@ export default function NoteEditor({ note, onClose }: { note: Note; onClose: () 
               )}
             </div>
 
+            {/* Diviser la note */}
+            <div className="bg-white shadow-md rounded-lg p-4">
+              <h4 className="text-accent font-semibold mb-3 text-sm sm:text-base">DIVISER LA NOTE</h4>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                <label className="text-gray-900 text-sm font-medium whitespace-nowrap">Nombre de personnes :</label>
+                <div className="flex items-center gap-3 w-full sm:w-auto">
+                  <input
+                    type="number"
+                    min="1"
+                    value={numberOfPeople}
+                    onChange={(e) => setNumberOfPeople(e.target.value)}
+                    placeholder="1"
+                    className="w-20 bg-gray-50 text-gray-900 border-2 border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-accent text-center font-bold"
+                  />
+                  <span className="text-gray-900 text-sm">→</span>
+                  <div className="flex-1 bg-accent-light bg-opacity-10 rounded px-4 py-2 border-2 border-accent-light">
+                    <span className="text-accent-light font-bold text-base sm:text-lg">
+                      {numberOfPeople && parseInt(numberOfPeople) > 0 
+                        ? (total / parseInt(numberOfPeople)).toFixed(2) 
+                        : total.toFixed(2)}€ / pers.
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* Total */}
             <div className="bg-accent rounded-lg p-4 sm:p-6">
               <div className="flex justify-between items-center">
-                <span className="text-primary font-bold text-xl sm:text-2xl">TOTAL</span>
-                <span className="text-primary font-bold text-2xl sm:text-3xl">
+                <span className="text-white font-bold text-xl sm:text-2xl">TOTAL</span>
+                <span className="text-white font-bold text-2xl sm:text-3xl">
                   {total.toFixed(2)}€
                 </span>
               </div>
@@ -282,14 +319,14 @@ export default function NoteEditor({ note, onClose }: { note: Note; onClose: () 
                       closeNote(note.id);
                     }
                   }}
-                  className="w-full bg-accent-coral hover:bg-accent-orange text-white py-3 rounded font-semibold transition text-sm sm:text-base"
+                  className="w-full bg-red-500 hover:opacity-90 text-white py-3 rounded font-semibold transition text-sm sm:text-base"
                 >
                   CLÔTURER LA NOTE
                 </button>
               ) : (
                 <button
                   onClick={() => reopenNote(note.id)}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded font-semibold transition text-sm sm:text-base"
+                  className="w-full bg-accent-light hover:opacity-90 text-white py-3 rounded font-semibold transition text-sm sm:text-base"
                 >
                   ROUVRIR LA NOTE
                 </button>

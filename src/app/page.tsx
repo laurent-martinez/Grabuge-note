@@ -55,21 +55,21 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white">
-            Les notes du Grabuge
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold">
+        Les notes du Grabuge
           </h1>
           <div className="flex flex-wrap gap-2 w-full sm:w-auto">
             {isAuthenticated ? (
               <>
                 <button
                   onClick={() => setShowMenuManager(true)}
-                  className="flex-1 sm:flex-none bg-accent hover:bg-accent-light text-primary px-4 py-2 rounded font-semibold transition text-sm sm:text-base"
+                  className="flex-1 sm:flex-none bg-accent hover:opacity-90 text-white px-4 py-2 rounded font-semibold transition text-sm sm:text-base"
                 >
-                   GÉRER LE MENU
+                  ⚙️ GÉRER LE MENU
                 </button>
                 <button
                   onClick={logout}
-                  className="flex-1 sm:flex-none bg-accent-coral hover:bg-accent-orange text-white px-4 py-2 rounded font-semibold transition text-sm sm:text-base"
+                  className="flex-1 sm:flex-none bg-red-500 hover:opacity-90 text-white px-4 py-2 rounded font-semibold transition text-sm sm:text-base"
                 >
                   DÉCONNEXION
                 </button>
@@ -77,7 +77,7 @@ export default function Home() {
             ) : (
               <button
                 onClick={() => setShowLogin(true)}
-                className="flex-1 sm:flex-none bg-accent hover:bg-accent-light text-primary px-4 py-2 rounded font-semibold transition text-sm sm:text-base"
+                className="flex-1 sm:flex-none bg-accent hover:opacity-90 text-white px-4 py-2 rounded font-semibold transition text-sm sm:text-base"
               >
                 🔒 CONNEXION
               </button>
@@ -87,7 +87,7 @@ export default function Home() {
 
         {/* New Note Form */}
         {showNewNoteForm ? (
-          <div className="bg-primary-dark rounded-lg p-4 sm:p-6 mb-6 border-2 border-accent">
+          <div className="bg-white shadow-lg rounded-lg p-4 sm:p-6 mb-6 border-2 border-accent">
             <h2 className="text-accent font-bold text-xl mb-4">NOUVELLE NOTE</h2>
             <div className="flex flex-col sm:flex-row gap-3">
               <input
@@ -96,12 +96,12 @@ export default function Home() {
                 value={newNoteTitle}
                 onChange={(e) => setNewNoteTitle(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleAddNote()}
-                className="flex-1 bg-primary text-white border-2 border-accent rounded px-4 py-3 focus:outline-none focus:border-accent-light text-sm sm:text-base"
+                className="flex-1 bg-gray-50 text-gray-900 border-2 border-gray-300 rounded px-4 py-3 focus:outline-none focus:border-accent text-sm sm:text-base"
                 autoFocus
               />
               <button
                 onClick={handleAddNote}
-                className="bg-accent hover:bg-accent-light text-primary px-6 py-3 rounded font-semibold transition text-sm sm:text-base"
+                className="bg-accent hover:opacity-90 text-white px-6 py-3 rounded font-semibold transition text-sm sm:text-base"
               >
                 CRÉER
               </button>
@@ -110,7 +110,7 @@ export default function Home() {
                   setShowNewNoteForm(false);
                   setNewNoteTitle('');
                 }}
-                className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded font-semibold transition text-sm sm:text-base"
+                className="bg-gray-400 hover:opacity-90 text-white px-6 py-3 rounded font-semibold transition text-sm sm:text-base"
               >
                 ANNULER
               </button>
@@ -119,7 +119,7 @@ export default function Home() {
         ) : (
           <button
             onClick={() => setShowNewNoteForm(true)}
-            className="w-full bg-accent hover:bg-accent-light text-primary py-4 rounded-lg font-bold text-lg sm:text-xl mb-6 transition"
+            className="w-full bg-accent hover:opacity-90 text-white py-4 rounded-lg font-bold text-lg sm:text-xl mb-6 transition shadow-md"
           >
             + NOUVELLE NOTE
           </button>
@@ -132,8 +132,8 @@ export default function Home() {
               onClick={() => setFilter('all')}
               className={`px-4 py-2 rounded font-semibold transition whitespace-nowrap text-sm sm:text-base ${
                 filter === 'all'
-                  ? 'bg-accent text-primary'
-                  : 'bg-primary-dark text-white border-2 border-accent'
+                  ? 'bg-accent text-white'
+                  : 'bg-white text-gray-900 border-2 border-accent'
               }`}
             >
               TOUTES ({notes.length})
@@ -142,8 +142,8 @@ export default function Home() {
               onClick={() => setFilter('ouvert')}
               className={`px-4 py-2 rounded font-semibold transition whitespace-nowrap text-sm sm:text-base ${
                 filter === 'ouvert'
-                  ? 'bg-accent text-primary'
-                  : 'bg-primary-dark text-white border-2 border-accent'
+                  ? 'bg-accent text-white'
+                  : 'bg-white text-gray-900 border-2 border-accent'
               }`}
             >
               🟢 OUVERTES ({notes.filter(n => n.status === 'ouvert').length})
@@ -152,8 +152,8 @@ export default function Home() {
               onClick={() => setFilter('cloture')}
               className={`px-4 py-2 rounded font-semibold transition whitespace-nowrap text-sm sm:text-base ${
                 filter === 'cloture'
-                  ? 'bg-accent text-primary'
-                  : 'bg-primary-dark text-white border-2 border-accent'
+                  ? 'bg-accent text-white'
+                  : 'bg-white text-gray-900 border-2 border-accent'
               }`}
             >
               🔴 CLÔTURÉES ({notes.filter(n => n.status === 'cloture').length})
@@ -163,7 +163,7 @@ export default function Home() {
           {notes.filter(n => n.status === 'cloture').length > 0 && (
             <button
               onClick={handleDeleteClosedNotes}
-              className="bg-accent-coral hover:bg-accent-orange text-white px-4 py-2 rounded font-semibold transition whitespace-nowrap text-sm sm:text-base"
+              className="bg-red-500 hover:opacity-90 text-white px-4 py-2 rounded font-semibold transition whitespace-nowrap text-sm sm:text-base"
             >
               🗑️ SUPPRIMER LES NOTES CLÔTURÉES
             </button>
@@ -173,7 +173,7 @@ export default function Home() {
         {/* Notes List */}
         {filteredNotes.length === 0 ? (
           <div className="text-center py-16">
-            <p className="text-gray-400 text-lg sm:text-xl">
+            <p className="text-gray-600 text-lg sm:text-xl">
               {filter === 'all' 
                 ? 'Aucune note. Créez-en une pour commencer !'
                 : filter === 'ouvert'
@@ -187,10 +187,10 @@ export default function Home() {
               <div
                 key={note.id}
                 onClick={() => setSelectedNote(note)}
-                className="bg-primary-dark rounded-lg p-4 sm:p-6 border-2 border-accent hover:border-accent-light cursor-pointer transition group"
+                className="bg-white shadow-md rounded-lg p-4 sm:p-6 border-2 border-gray-200 hover:border-accent cursor-pointer transition group"
               >
                 <div className="flex justify-between items-start mb-3">
-                  <h3 className="text-accent font-bold text-lg sm:text-xl group-hover:text-accent-light transition truncate flex-1">
+                  <h3 className="text-accent font-bold text-lg sm:text-xl group-hover:opacity-80 transition truncate flex-1">
                     {note.title}
                   </h3>
                   <span className="ml-2 text-lg">
@@ -199,7 +199,7 @@ export default function Home() {
                 </div>
                 
                 <div className="space-y-2 text-sm sm:text-base">
-                  <div className="flex justify-between text-white">
+                  <div className="flex justify-between text-gray-900">
                     <span>Articles:</span>
                     <span className="font-semibold">
                       {note.items.reduce((sum, item) => sum + item.quantity, 0)}
@@ -211,7 +211,7 @@ export default function Home() {
                     <span>{note.total.toFixed(2)}€</span>
                   </div>
                   
-                  <div className="text-gray-400 text-xs sm:text-sm pt-2 border-t border-gray-700">
+                  <div className="text-gray-600 text-xs sm:text-sm pt-2 border-t border-gray-200">
                     {new Date(note.updatedAt).toLocaleDateString('fr-FR', {
                       day: '2-digit',
                       month: '2-digit',
