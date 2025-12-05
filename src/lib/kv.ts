@@ -1,14 +1,25 @@
 import { createClient } from 'redis';
+import fs from 'fs/promises';
+import path from 'path';
 
 // Clés pour stocker les données
 const MENU_KEY = 'restaurant:menu';
 const NOTES_KEY = 'restaurant:notes';
 
+// Chemins des fichiers JSON pour le stockage local
+const DATA_DIR = path.join(process.cwd(), 'data');
+const MENU_FILE = path.join(DATA_DIR, 'menu.json');
+const NOTES_FILE = path.join(DATA_DIR, 'notes.json');
+
 // Créer le client Redis
 let redisClient: ReturnType<typeof createClient> | null = null;
 
+// Vérifier si on est en production (Vercel)
+const isProduction = process.env.VERCEL_ENV === 'production' || process.env.REDIS_URL?.includes('redis://');
+
 async function getRedisClient() {
-  if (!process.env.REDIS_URL) {
+  // En production seulement
+  if (!isProduction || !process.env.REDIS_URL) {
     return null;
   }
 
@@ -24,17 +35,48 @@ async function getRedisClient() {
     redisClient.on('error', (err) => console.error('Redis Client Error', err));
     
     await redisClient.connect();
-    console.log('Redis connected successfully');
+    console.log('✅ Redis connected successfully');
     
     return redisClient;
   } catch (error) {
-    console.error('Error connecting to Redis:', error);
+    console.error('❌ Error connecting to Redis:', error);
     return null;
   }
 }
 
-// Stockage en mémoire pour le développement local
-const memoryStorage: { [key: string]: any } = {};
+// Assurer que le dossier data existe
+async function ensureDataDir() {
+  try {
+    await fs.access(DATA_DIR);
+  } catch {
+    await fs.mkdir(DATA_DIR, { recursive: true });
+    console.log('📁 Data directory created');
+  }
+}
+
+// Lire depuis un fichier JSON
+async function readFromFile(filePath: string, defaultValue: any = []) {
+  try {
+    await ensureDataDir();
+    const data = await fs.readFile(filePath, 'utf-8');
+    return JSON.parse(data);
+  } catch (error) {
+    // Si le fichier n'existe pas, retourner la valeur par défaut
+    return defaultValue;
+  }
+}
+
+// Écrire dans un fichier JSON
+async function writeToFile(filePath: string, data: any) {
+  try {
+    await ensureDataDir();
+    await fs.writeFile(filePath, JSON.stringify(data, null, 2), 'utf-8');
+    return true;
+  } catch (error) {
+    console.error('Error writing to file:', error);
+    return false;
+  }
+}
 
 // Fonction pour récupérer le menu
 export async function getMenu() {
@@ -42,15 +84,18 @@ export async function getMenu() {
     const client = await getRedisClient();
     
     if (client) {
+      // Production : utiliser Redis
       const data = await client.get(MENU_KEY);
       return data ? JSON.parse(data) : [];
     } else {
-      // Mode développement local - retourner depuis la mémoire
-      return memoryStorage[MENU_KEY] || [];
+      // Dev local : utiliser fichier JSON
+      const menu = await readFromFile(MENU_FILE, []);
+      console.log('📖 Menu loaded from file');
+      return menu;
     }
   } catch (error) {
     console.error('Error getting menu:', error);
-    return memoryStorage[MENU_KEY] || [];
+    return [];
   }
 }
 
@@ -60,19 +105,18 @@ export async function saveMenu(menuItems: any[]) {
     const client = await getRedisClient();
     
     if (client) {
+      // Production : utiliser Redis
       await client.set(MENU_KEY, JSON.stringify(menuItems));
-      console.log('Menu saved to Redis successfully');
+      console.log('✅ Menu saved to Redis');
     } else {
-      // Mode développement local - sauvegarder en mémoire
-      memoryStorage[MENU_KEY] = menuItems;
-      console.log('Menu saved to memory (dev mode)');
+      // Dev local : utiliser fichier JSON
+      await writeToFile(MENU_FILE, menuItems);
+      console.log('💾 Menu saved to file');
     }
     return true;
   } catch (error) {
     console.error('Error saving menu:', error);
-    // Fallback to memory
-    memoryStorage[MENU_KEY] = menuItems;
-    return true;
+    return false;
   }
 }
 
@@ -82,15 +126,18 @@ export async function getNotes() {
     const client = await getRedisClient();
     
     if (client) {
+      // Production : utiliser Redis
       const data = await client.get(NOTES_KEY);
       return data ? JSON.parse(data) : [];
     } else {
-      // Mode développement local - retourner depuis la mémoire
-      return memoryStorage[NOTES_KEY] || [];
+      // Dev local : utiliser fichier JSON
+      const notes = await readFromFile(NOTES_FILE, []);
+      console.log('📖 Notes loaded from file');
+      return notes;
     }
   } catch (error) {
     console.error('Error getting notes:', error);
-    return memoryStorage[NOTES_KEY] || [];
+    return [];
   }
 }
 
@@ -100,18 +147,17 @@ export async function saveNotes(notes: any[]) {
     const client = await getRedisClient();
     
     if (client) {
+      // Production : utiliser Redis
       await client.set(NOTES_KEY, JSON.stringify(notes));
-      console.log('Notes saved to Redis successfully');
+      console.log('✅ Notes saved to Redis');
     } else {
-      // Mode développement local - sauvegarder en mémoire
-      memoryStorage[NOTES_KEY] = notes;
-      console.log('Notes saved to memory (dev mode)');
+      // Dev local : utiliser fichier JSON
+      await writeToFile(NOTES_FILE, notes);
+      console.log('💾 Notes saved to file');
     }
     return true;
   } catch (error) {
     console.error('Error saving notes:', error);
-    // Fallback to memory
-    memoryStorage[NOTES_KEY] = notes;
-    return true;
+    return false;
   }
 }
