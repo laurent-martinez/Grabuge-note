@@ -12,8 +12,8 @@ interface AppContextType {
   reopenNote: (noteId: string) => void;
 deleteClosedNotes: () => Promise<void>;
   addMenuItem: (item: Omit<MenuItem, 'id'>) => void;
-  updateMenuItem: (id: string, item: Partial<MenuItem>) => void;
-  deleteMenuItem: (id: string) => void;
+updateMenuItem: (id: string, item: Partial<MenuItem>) => Promise<void>;
+deleteMenuItem: (id: string) => Promise<void>;  // au lieu de (id: string) => void
   isLoading: boolean;
 }
 
@@ -194,19 +194,19 @@ const deleteClosedNotes = async () => {
     saveMenu(updatedMenu);
   };
 
-  const updateMenuItem = (id: string, updates: Partial<MenuItem>) => {
-    const updatedMenu = menuItems.map(item => 
-      item.id === id ? { ...item, ...updates } : item
-    );
-    setMenuItems(updatedMenu);
-    saveMenu(updatedMenu);
-  };
+const updateMenuItem = async (id: string, item: Partial<MenuItem>) => {
+  const updatedMenu = menuItems.map(m =>
+    m.id === id ? { ...m, ...item } : m
+  );
+  setMenuItems(updatedMenu);
+  await saveMenu(updatedMenu);
+};
 
-  const deleteMenuItem = (id: string) => {
-    const updatedMenu = menuItems.filter(item => item.id !== id);
-    setMenuItems(updatedMenu);
-    saveMenu(updatedMenu);
-  };
+const deleteMenuItem = async (id: string) => {
+  const updatedMenu = menuItems.filter(item => item.id !== id);
+  setMenuItems(updatedMenu);
+  await saveMenu(updatedMenu);
+};
 
   return (
     <AppContext.Provider value={{
