@@ -10,10 +10,10 @@ interface AppContextType {
   updateNote: (noteId: string, items: NoteItem[], adjustments: Adjustment[]) => void;
   closeNote: (noteId: string) => void;
   reopenNote: (noteId: string) => void;
-deleteClosedNotes: () => Promise<void>;
+  deleteClosedNotes: () => Promise<void>;
   addMenuItem: (item: Omit<MenuItem, 'id'>) => void;
-updateMenuItem: (id: string, item: Partial<MenuItem>) => Promise<void>;
-deleteMenuItem: (id: string) => Promise<void>;  // au lieu de (id: string) => void
+  updateMenuItem: (id: string, item: Partial<MenuItem>) => Promise<void>;
+  deleteMenuItem: (id: string) => Promise<void>;
   isLoading: boolean;
 }
 
@@ -24,7 +24,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Charger les données depuis l'API au démarrage
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -34,7 +33,20 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         const menuResponse = await fetch('/api/menu');
         if (menuResponse.ok) {
           const menuData = await menuResponse.json();
-          setMenuItems(menuData);
+          console.log('🔍 menuData reçu:', menuData);
+          console.log('🔍 Type:', typeof menuData);
+          console.log('🔍 Est un tableau?', Array.isArray(menuData));
+          
+          // ⚠️ VÉRIFICATION CRITIQUE : S'assurer que c'est un tableau
+          if (Array.isArray(menuData)) {
+            setMenuItems(menuData);
+          } else if (menuData && Array.isArray(menuData.menuItems)) {
+            // Peut-être que l'API retourne { menuItems: [...] }
+            setMenuItems(menuData.menuItems);
+          } else {
+            console.error('❌ menuData n\'est pas un tableau:', menuData);
+            setMenuItems([]);
+          }
         }
         
         // Charger les notes
@@ -62,7 +74,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     loadData();
   }, []);
 
-  // Sauvegarder les notes dans l'API à chaque changement
   const saveNotes = async (updatedNotes: Note[]) => {
     try {
       await fetch('/api/notes/update', {
@@ -75,7 +86,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  // Sauvegarder le menu dans l'API à chaque changement
   const saveMenu = async (updatedMenu: MenuItem[]) => {
     try {
       await fetch('/api/menu/update', {
@@ -88,7 +98,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  // Synchroniser les prix des notes avec les prix actuels du menu
   useEffect(() => {
     if (notes.length > 0 && menuItems.length > 0) {
       const updatedNotes = notes.map(note => {
@@ -100,7 +109,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           return item;
         });
         
-        // Recalculer le total
         const itemsTotal = updatedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
         const adjustmentsTotal = note.adjustments.reduce((sum, adj) => sum + adj.amount, 0);
         const total = itemsTotal + adjustmentsTotal;
@@ -108,7 +116,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         return { ...note, items: updatedItems, total };
       });
       
-      // Ne mettre à jour que si des changements ont été détectés
       const hasChanges = updatedNotes.some((note, index) => 
         note.total !== notes[index].total || 
         note.items.some((item, itemIndex) => item.price !== notes[index].items[itemIndex]?.price)
@@ -178,11 +185,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     saveNotes(updatedNotes);
   };
 
-const deleteClosedNotes = async () => {
-  const updatedNotes = notes.filter(note => note.status === 'ouvert');
-  setNotes(updatedNotes);
-  await saveNotes(updatedNotes);
-};
+  const deleteClosedNotes = async () => {
+    const updatedNotes = notes.filter(note => note.status === 'ouvert');
+    setNotes(updatedNotes);
+    await saveNotes(updatedNotes);
+  };
 
   const addMenuItem = (item: Omit<MenuItem, 'id'>) => {
     const newItem: MenuItem = {
@@ -194,19 +201,19 @@ const deleteClosedNotes = async () => {
     saveMenu(updatedMenu);
   };
 
-const updateMenuItem = async (id: string, item: Partial<MenuItem>) => {
-  const updatedMenu = menuItems.map(m =>
-    m.id === id ? { ...m, ...item } : m
-  );
-  setMenuItems(updatedMenu);
-  await saveMenu(updatedMenu);
-};
+  const updateMenuItem = async (id: string, item: Partial<MenuItem>) => {
+    const updatedMenu = menuItems.map(m =>
+      m.id === id ? { ...m, ...item } : m
+    );
+    setMenuItems(updatedMenu);
+    await saveMenu(updatedMenu);
+  };
 
-const deleteMenuItem = async (id: string) => {
-  const updatedMenu = menuItems.filter(item => item.id !== id);
-  setMenuItems(updatedMenu);
-  await saveMenu(updatedMenu);
-};
+  const deleteMenuItem = async (id: string) => {
+    const updatedMenu = menuItems.filter(item => item.id !== id);
+    setMenuItems(updatedMenu);
+    await saveMenu(updatedMenu);
+  };
 
   return (
     <AppContext.Provider value={{
