@@ -88,13 +88,14 @@ async function ensureDataDir() {
 }
 
 // Lire depuis un fichier JSON
-async function readFromFile(filePath: string, defaultValue: any = []) {
+async function readFromFile(filePath: string) {
   try {
     await ensureDataDir();
     const data = await fs.readFile(filePath, 'utf-8');
     return JSON.parse(data);
   } catch (error) {
-    return defaultValue;
+    // Retourner null si le fichier n'existe pas
+    return null;
   }
 }
 
@@ -119,22 +120,30 @@ export async function getMenu() {
       // Production : utiliser Redis
       try {
         const data = await client.get(MENU_KEY);
-        const menu = data ? JSON.parse(data) : [];
+        if (!data) {
+          console.log('📖 Menu Redis vide - première fois');
+          return null;
+        }
+        const menu = JSON.parse(data);
         console.log('📖 Menu chargé depuis Redis:', menu.length, 'items');
         return menu;
       } catch (error) {
         console.error('❌ Erreur lecture Redis menu:', error);
-        return [];
+        return null;
       }
     } else {
       // Dev local : utiliser fichier JSON
-      const menu = await readFromFile(MENU_FILE, []);
+      const menu = await readFromFile(MENU_FILE);
+      if (menu === null) {
+        console.log('📖 Fichier menu.json inexistant - première fois');
+        return null;
+      }
       console.log('📖 Menu chargé depuis fichier:', menu.length, 'items');
       return menu;
     }
   } catch (error) {
     console.error('❌ Erreur getMenu:', error);
-    return [];
+    return null;
   }
 }
 
@@ -191,7 +200,11 @@ export async function getNotes() {
       }
     } else {
       // Dev local : utiliser fichier JSON
-      const notes = await readFromFile(NOTES_FILE, []);
+      const notes = await readFromFile(NOTES_FILE);
+      if (notes === null) {
+        console.log('📖 Fichier notes.json inexistant - retour tableau vide');
+        return [];
+      }
       console.log('📖 Notes chargées depuis fichier:', notes.length, 'notes');
       return notes;
     }

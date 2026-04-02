@@ -88,5 +88,17 @@
     "price": 8,
     "category": "plat",
     "id": "1773938265306"
+  },
+  {
+    "name": "vin cubis",
+    "price": 3.8,
+    "category": "boisson",
+    "id": "1775135202267"
+  },
+  {
+    "name": "falafels",
+    "price": 8,
+    "category": "plat",
+    "id": "1775135252105"
   }
 ]

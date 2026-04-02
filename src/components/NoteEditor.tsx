@@ -25,6 +25,8 @@ export default function NoteEditor({ note, onClose }: { note: Note; onClose: () 
   const [tempRemovals, setTempRemovals] = useState<{menuItemId: string, name: string, price: number}[]>([]);
   const [showAdjustments, setShowAdjustments] = useState(false);
   const [showDivision, setShowDivision] = useState(false);
+  const [showChange, setShowChange] = useState(false);
+  const [amountGiven, setAmountGiven] = useState<string>('');
 
   useEffect(() => {
     updateNote(note.id, items, adjustments);
@@ -87,6 +89,8 @@ export default function NoteEditor({ note, onClose }: { note: Note; onClose: () 
   const adjustmentsTotal = adjustments.reduce((sum, adj) => sum + adj.amount, 0);
   const total = itemsTotal + adjustmentsTotal;
   const tempRemovalsTotal = tempRemovals.reduce((sum, item) => sum + item.price, 0);
+  const given = parseFloat(amountGiven) || 0;
+  const change = given - total;
 
   const categories = [
     { value: 'boisson', label: 'BOISSONS' },
@@ -248,6 +252,31 @@ export default function NoteEditor({ note, onClose }: { note: Note; onClose: () 
                 <span className="text-white font-bold text-xl sm:text-2xl">TOTAL</span>
                 <span className="text-white font-bold text-2xl sm:text-3xl">{total.toFixed(2)}€</span>
               </div>
+            </div>
+
+            <div className="bg-white shadow-md rounded-lg p-3 sm:p-4">
+              <div className="flex justify-between items-center cursor-pointer" onClick={() => setShowChange(!showChange)}>
+                <h4 className="text-accent font-semibold text-sm sm:text-base">CALCUL MONNAIE</h4>
+                <button className="text-accent text-xl font-bold">{showChange ? '−' : '+'}</button>
+              </div>
+              {showChange && (
+                <div className="mt-3 space-y-3">
+                  <input type="number" step="0.01" value={amountGiven} onChange={(e) => setAmountGiven(e.target.value)} placeholder="20.00" className="w-full bg-gray-50 text-gray-900 border-2 border-gray-300 rounded px-4 py-3 focus:outline-none focus:border-accent text-center text-xl font-bold" />
+                  {amountGiven && given >= total && (
+                    <div className={`rounded-lg p-4 ${change > 0 ? 'bg-green-100 border-2 border-green-500' : 'bg-gray-100 border-2 border-gray-300'}`}>
+                      <div className="flex justify-between items-center">
+                        <span className={`font-bold text-lg ${change > 0 ? 'text-green-700' : 'text-gray-700'}`}>MONNAIE À RENDRE</span>
+                        <span className={`font-bold text-2xl ${change > 0 ? 'text-green-700' : 'text-gray-700'}`}>{change.toFixed(2)}€</span>
+                      </div>
+                    </div>
+                  )}
+                  {amountGiven && given < total && (
+                    <div className="bg-red-100 border-2 border-red-500 rounded-lg p-3">
+                      <p className="text-red-700 font-semibold text-center text-sm">Montant insuffisant ! Il manque {(total - given).toFixed(2)}€</p>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             <div className="space-y-2">

@@ -1,18 +1,20 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { saveMenu } from '@/lib/kv';
 
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
   try {
     const menuItems = await request.json();
-    const success = await saveMenu(menuItems);
     
-    if (success) {
-      return NextResponse.json({ success: true });
-    } else {
-      return NextResponse.json({ error: 'Failed to save menu' }, { status: 500 });
-    }
+    console.log('🔧 Sauvegarde du menu:', menuItems.length, 'items');
+    
+    await saveMenu(menuItems);
+    
+    return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Error updating menu:', error);
-    return NextResponse.json({ error: 'Failed to update menu' }, { status: 500 });
+    console.error('❌ Error saving menu:', error);
+    return NextResponse.json(
+      { error: 'Failed to save menu' },
+      { status: 500 }
+    );
   }
 }
