@@ -87,14 +87,14 @@ async function ensureDataDir() {
   }
 }
 
-// Lire depuis un fichier JSON
+// ⚠️ CHANGEMENT ICI : Plus de defaultValue, toujours retourner null si pas de fichier
 async function readFromFile(filePath: string) {
   try {
     await ensureDataDir();
     const data = await fs.readFile(filePath, 'utf-8');
     return JSON.parse(data);
   } catch (error) {
-    // Retourner null si le fichier n'existe pas
+    // ✅ Retourner null si le fichier n'existe pas (pas de defaultValue !)
     return null;
   }
 }
@@ -120,6 +120,7 @@ export async function getMenu() {
       // Production : utiliser Redis
       try {
         const data = await client.get(MENU_KEY);
+        // ✅ Si pas de données Redis, retourner null (pas [])
         if (!data) {
           console.log('📖 Menu Redis vide - première fois');
           return null;
@@ -133,6 +134,7 @@ export async function getMenu() {
       }
     } else {
       // Dev local : utiliser fichier JSON
+      // ✅ readFromFile retourne maintenant null si pas de fichier
       const menu = await readFromFile(MENU_FILE);
       if (menu === null) {
         console.log('📖 Fichier menu.json inexistant - première fois');
@@ -201,6 +203,7 @@ export async function getNotes() {
     } else {
       // Dev local : utiliser fichier JSON
       const notes = await readFromFile(NOTES_FILE);
+      // ✅ Pour les notes, on accepte null et on retourne []
       if (notes === null) {
         console.log('📖 Fichier notes.json inexistant - retour tableau vide');
         return [];
