@@ -16,11 +16,11 @@ let redisClient: ReturnType<typeof createClient> | null = null;
 let isConnecting = false;
 
 // Vérifier si on est en production (Vercel avec Redis)
-const isProduction = process.env.VERCEL_ENV === 'production' && process.env.REDIS_URL;
+const isProduction = process.env.VERCEL_ENV === 'production' && process.env.KV_REDIS_URL;
 
 async function getRedisClient() {
-  // Si pas en production ou pas de REDIS_URL, pas de Redis
-  if (!isProduction || !process.env.REDIS_URL) {
+  // Si pas en production ou pas de KV_REDIS_URL, pas de Redis
+  if (!isProduction || !process.env.KV_REDIS_URL) {
     console.log('📝 Mode développement : utilisation de fichiers JSON');
     return null;
   }
@@ -41,7 +41,7 @@ async function getRedisClient() {
 
   try {
     redisClient = createClient({
-      url: process.env.REDIS_URL,
+      url: process.env.KV_REDIS_URL,
       socket: {
         reconnectStrategy: (retries) => {
           if (retries > 10) {
@@ -87,14 +87,14 @@ async function ensureDataDir() {
   }
 }
 
-// ⚠️ CHANGEMENT ICI : Plus de defaultValue, toujours retourner null si pas de fichier
+// Lire depuis un fichier JSON
 async function readFromFile(filePath: string) {
   try {
     await ensureDataDir();
     const data = await fs.readFile(filePath, 'utf-8');
     return JSON.parse(data);
   } catch (error) {
-    // ✅ Retourner null si le fichier n'existe pas (pas de defaultValue !)
+    // Retourner null si le fichier n'existe pas
     return null;
   }
 }
@@ -120,7 +120,6 @@ export async function getMenu() {
       // Production : utiliser Redis
       try {
         const data = await client.get(MENU_KEY);
-        // ✅ Si pas de données Redis, retourner null (pas [])
         if (!data) {
           console.log('📖 Menu Redis vide - première fois');
           return null;
@@ -134,7 +133,6 @@ export async function getMenu() {
       }
     } else {
       // Dev local : utiliser fichier JSON
-      // ✅ readFromFile retourne maintenant null si pas de fichier
       const menu = await readFromFile(MENU_FILE);
       if (menu === null) {
         console.log('📖 Fichier menu.json inexistant - première fois');
@@ -203,7 +201,6 @@ export async function getNotes() {
     } else {
       // Dev local : utiliser fichier JSON
       const notes = await readFromFile(NOTES_FILE);
-      // ✅ Pour les notes, on accepte null et on retourne []
       if (notes === null) {
         console.log('📖 Fichier notes.json inexistant - retour tableau vide');
         return [];
